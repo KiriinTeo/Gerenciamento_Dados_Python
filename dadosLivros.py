@@ -41,12 +41,28 @@ else:
 
 '''json.loads(dados['docs'])'''
 
-livros_filtrados = [livro for livro in dados['docs'] if livro.get('title') == "The Witcher" and "Andrzej Sapkowski" in livro.get('author_name', []) and livro.get('first_publish_year') == 2020]
-plus = input("Deseja ver livro filtrado: (s/n):")
-if plus == 's':
-    for livro in livros_filtrados:
-        print(f"Livro: {livro.get('title')}, Autor: {', '.join(livro.get('author_name', []))}, Ano: {livro.get('first_publish_year')}\n")
+def filtrarConsulta(dados):
+    filtro_titulo = input("Informe um título para filtrar: ")
+    filtro_autor = input("Informe um autor para filtrar: ")
+    filtro_ano = input("Informe um ano para filtrar: ")
 
+    livros_filtrados = [
+        livro for livro in dados['docs']
+        if (not filtro_titulo or livro.get('title') == filtro_titulo) and
+           (not filtro_autor or filtro_autor in livro.get('author_name', [])) and
+           (not filtro_ano or str(livro.get('first_publish_year', '')) == filtro_ano)
+    ]
+    
+    plus = input("Deseja ver livro filtrado: (s/n):")
+    if plus.lower() == 's':
+        for livro in livros_filtrados:
+            print(f"\nLivro: {livro.get('title', 'N/A')}")
+            print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
+            print(f"Ano: {livro.get('first_publish_year', 'N/A')}")
+            print(f"ISBN: {', '.join(livro.get('isbn', 'N/A'))}")
+            print("-" * 40)
+
+filtrarConsulta(dados)
 
 saida = input("Deseja limpar o console? (s/n):")
 if saida == 's':
