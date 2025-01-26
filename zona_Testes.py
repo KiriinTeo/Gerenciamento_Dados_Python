@@ -9,4 +9,4 @@ def teste():
 
 if __name__ == "__main__":
     teste()
-    print("All tests passed.")
+    print("Testes Aprovados. Parabéns")

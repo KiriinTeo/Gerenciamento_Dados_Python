@@ -94,21 +94,7 @@ class CircularLinkedList:
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-lista = CircularLinkedList()
+cll = CircularLinkedList()
 
-lista.limparSaida()
-
-'''
-lista.AdicionarUltimo("Livro A", "Autor A", 2020, "Editora A", 3655210)
-lista.AdicionarUltimo("Livro B", "Autor B", 2021, "Editora B", 9901739)
-lista.AdicionarUltimo("Livro C", "Autor C", 2022, "Editora C", 8897360)
-os.system('cls' if os.name == 'nt' else 'clear')
-
-lista.ImprimirLista()
-
-lista.RemoverPrimeiro()
-lista.ImprimirLista()
-
-lista.RemoverUltimo()
-lista.ImprimirLista()
-'''
+# Teste de impressão da lista
+cll.ImprimirLista()

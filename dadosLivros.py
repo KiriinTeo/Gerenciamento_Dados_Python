@@ -1,7 +1,9 @@
 import requests, json
-from statLivros import CircularLinkedList as cll
+from statLivros import CircularLinkedList
 
-def consultaLivro(titulo = None, autor = None, isbn = None):
+cll = CircularLinkedList()
+
+def consultaLivro(titulo=None, autor=None, isbn=None):
     url_Basica = "https://openlibrary.org/search.json"
 
     if isbn:
@@ -22,22 +24,47 @@ def consultaLivro(titulo = None, autor = None, isbn = None):
     else:
         raise Exception(f"Erro ao acessar a API: {response.status_code}")
 
-titulo = input("Digite o título do livro: ")
-autor = input("Digite o autor (opcional): ")
-isbn = input("Digite o ISBN (opcional): ")
 
-dados = consultaLivro(titulo=titulo, autor=autor, isbn=isbn)
-print(consultaLivro())
+def historicoResultado(dados, nome_arquivo):
+    try:
+        with open(nome_arquivo, 'w', encoding='utf-8') as arquivo:
+            json.dump(dados, arquivo, ensure_ascii=False, indent=4)
+        print(f"Dados salvos com sucesso no arquivo: {nome_arquivo}")
+    except Exception as e:
+        print(f"Erro ao salvar os dados no arquivo: {e}")
 
-if 'docs' in dados:
-    for livro in dados['docs']:
-        print(f"Título: {livro.get('title', 'N/A')}")
-        print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
-        print(f"ISBN: {', '.join(livro.get('isbn', ['N/A']))}")
-        print(f"Primeira publicação: {livro.get('first_publish_year', 'N/A')}")
-        print("-" * 40)
-else:
-    print("Nenhum livro encontrado.")
+def pesquisarLivro():
+    id_Exato = input("Olá! Deseja pesquisar através do ISBN? (s/n): ")
+    if id_Exato.lower() == 's':
+        isbn = input("Digite o ISBN: ")
+        dados = consultaLivro(isbn=isbn)
+        if dados:
+            for key, livro in dados.items():
+                print(f"Título: {livro.get('title', 'N/A')}")
+                print(f"Autor: {', '.join(livro.get('authors', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
+                print(f"ISBN: {isbn}")
+                print(f"Primeira publicação: {livro.get('publish_date', 'N/A')}")
+                print(f"Editora: {', '.join(livro.get('publishers', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
+                print("-" * 40)
+            return dados
+    else:
+        print("Então vamos á pesquisa por titulo e autor \n ")
+
+    titulo = input("Digite o título do livro: ")
+    autor = input("Digite o autor (opcional): ")
+
+    dados = consultaLivro(titulo=titulo, autor=autor)
+    if 'docs' in dados:
+        for livro in dados['docs']:
+            print(f"Título: {livro.get('title', 'N/A')}")
+            print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
+            print(f"ISBN: {', '.join(livro.get('isbn', ['N/A']))}")
+            print(f"Primeira publicação: {livro.get('first_publish_year', 'N/A')}")
+            print(f"Editora: {', '.join(livro.get('publisher', ['N/A']))}")
+            print("-" * 40)
+        return dados
+    else:
+        print("Nenhum livro encontrado.")
 
 '''json.loads(dados['docs'])'''
 
@@ -53,20 +80,52 @@ def filtrarConsulta(dados):
            (not filtro_ano or str(livro.get('first_publish_year', '')) == filtro_ano)
     ]
     
-    plus = input("Deseja ver livro filtrado: (s/n):")
-    if plus.lower() == 's':
-        for livro in livros_filtrados:
-            print(f"\nLivro: {livro.get('title', 'N/A')}")
-            print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
-            print(f"Ano: {livro.get('first_publish_year', 'N/A')}")
-            print(f"ISBN: {', '.join(livro.get('isbn', 'N/A'))}")
-            print("-" * 40)
+    for livro in livros_filtrados:
+        print(f"\nLivro: {livro.get('title', 'N/A')}")
+        print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
+        print(f"Ano: {livro.get('first_publish_year', 'N/A')}")
+        print(f"ISBN: {', '.join(livro.get('isbn', ['N/A']))}")
+        print(f"Editora: {', '.join(livro.get('publisher', ['N/A']))}")
+        print("-" * 40)
 
-filtrarConsulta(dados)
+    return livros_filtrados
+
+def adicionarLivro(dados):
+    for livro in dados:
+        titulo = livro.get('title', 'N/A')
+        autor = ', '.join(livro.get('author_name', ['N/A']))
+        ano = livro.get('first_publish_year', 'N/A')
+        isbn = ', '.join(livro.get('isbn', ['N/A']))
+        editora = ', '.join(livro.get('publisher', ['N/A']))
+        
+        cll.AdicionarUltimo(titulo, autor, ano, editora, isbn)
+        
+    print("Sucesso na adição de dados!!!")
+
+while True:
+    resposta = pesquisarLivro()
+    if resposta:
+        plus = input("\nDeseja filtrar sua pesquisa? (s/n): ")
+        if plus.lower() == 's':
+            filtro = filtrarConsulta(resposta)
+            adicionarLivro(filtro)
+            
+            plus = input("Deseja realizar uma nova pesquisa?: (s/n)")
+            if plus.lower() == 's':
+                continue
+            else:
+                break
+    else:
+        print("\nDados insuficientes para filtrar.")
+        break
+    
 
 saida = input("Deseja limpar o console? (s/n):")
 if saida == 's':
-    cll.limparSaida(None) 
+    cll.limparSaida()
     exit()
 else:
+    cll.ImprimirLista()
+    print("-" * 40)
+    historicoResultado(resposta, 'resultado de pesquisa.json')
     exit()
