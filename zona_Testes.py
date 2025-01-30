@@ -41,14 +41,12 @@ class TestBiblioteca(unittest.TestCase):
             'Autor': 'Tolkien'
         }
         
-        df_filtrado = df
-        for coluna, criterio in filtros.items():
-            df_filtrado = df_filtrado[df_filtrado[coluna].astype(str).str.contains(criterio, case=False, na=False)]
+        df_filtrado = filtragemAvancada(df, filtros)
         
         self.assertGreater(len(df_filtrado), 0)
         for _, row in df_filtrado.iterrows():
-            self.assertIn('The Hobbit', row['Título'])
-            self.assertIn('Tolkien', row['Autor'])
+            self.assertIn('the hobbit', row['Título'].lower())
+            self.assertTrue(any(filtros['Autor'].lower() in autor.lower() for autor in row['Autor']))
 
 if __name__ == '__main__':
     unittest.main()

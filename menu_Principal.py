@@ -1,5 +1,5 @@
-from pratica import numeroDePares
+from dadosLivros import pesquisarLivro
 
 if __name__ == "__main__":
-    numeroDePares([4, 3, 1], [1, 2, 5])
+    pesquisarLivro(isbn="9789123963140")
     

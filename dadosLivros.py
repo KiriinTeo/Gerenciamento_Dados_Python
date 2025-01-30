@@ -18,20 +18,23 @@ def consultaLivro(titulo=None, autor=None, isbn=None):
     response = requests.get(url)
 
     if response.status_code == 200:
-        return response.json()
+        if isbn:
+            return {'docs': [response.json()[f'ISBN:{isbn}']]}
+        else:
+            return response.json()
     else:
         raise Exception(f"Erro ao acessar a API: {response.status_code}")
 
 def pesquisarLivro(isbn=None, titulo=None, autor=None):
     if isbn:
         dados = consultaLivro(isbn=isbn)
-        if dados:
-            for key, livro in dados.items():
+        if 'docs' in dados:
+            for livro in dados['docs']:
                 print(f"Título: {livro.get('title', 'N/A')}")
-                print(f"Autor: {', '.join(livro.get('authors', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
+                print(f"Autor: {', '.join([autor['name'] for autor in livro.get('authors', [{'name': 'N/A'}])])}")
                 print(f"ISBN: {isbn}")
                 print(f"Primeira publicação: {livro.get('publish_date', 'N/A')}")
-                print(f"Editora: {', '.join(livro.get('publishers', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
+                print(f"Editora: {', '.join([editora['name'] for editora in livro.get('publishers', [{'name': 'N/A'}])])}")
                 print("-" * 40)
             return dados
         else:
@@ -41,10 +44,10 @@ def pesquisarLivro(isbn=None, titulo=None, autor=None):
         if 'docs' in dados:
             for livro in dados['docs']:
                 print(f"Título: {livro.get('title', 'N/A')}")
-                print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
-                print(f"ISBN: {', '.join(livro.get('isbn', ['N/A']))}")
-                print(f"Primeira publicação: {livro.get('first_publish_year', 'N/A')}")
-                print(f"Editora: {', '.join(livro.get('publisher', ['N/A']))}")
+                print(f"Autor: {', '.join([autor['name'] for autor in livro.get('authors', [{'name': 'N/A'}])])}")
+                print(f"ISBN: {isbn}")
+                print(f"Primeira publicação: {livro.get('publish_date', 'N/A')}")
+                print(f"Editora: {', '.join([editora['name'] for editora in livro.get('publishers', [{'name': 'N/A'}])])}")
                 print("-" * 40)
             return dados
         else:
