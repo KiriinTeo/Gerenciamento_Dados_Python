@@ -95,6 +95,3 @@ class CircularLinkedList:
 
 
 cll = CircularLinkedList()
-
-# Teste de impressão da lista
-cll.ImprimirLista()

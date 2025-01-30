@@ -47,8 +47,10 @@ def pesquisarLivro():
                 print(f"Editora: {', '.join(livro.get('publishers', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
                 print("-" * 40)
             return dados
+        else:
+            print("Nenhum livro corresponde ao ISBN informado.")
     else:
-        print("Então vamos á pesquisa por titulo e autor \n ")
+        print("\nEntão vamos á pesquisa por titulo e autor ")
 
     titulo = input("Digite o título do livro: ")
     autor = input("Digite o autor (opcional): ")
@@ -66,7 +68,7 @@ def pesquisarLivro():
     else:
         print("Nenhum livro encontrado.")
 
-'''json.loads(dados['docs'])'''
+'''json.loads(dados['docs']) utilizado para criar uma lista com o json recebido, essa lista já está criada então o loads nn é necessário'''
 
 def filtrarConsulta(dados):
     filtro_titulo = input("Informe um título para filtrar: ")
@@ -115,6 +117,8 @@ while True:
                 continue
             else:
                 break
+        else: 
+            break
     else:
         print("\nDados insuficientes para filtrar.")
         break
@@ -123,9 +127,9 @@ while True:
 saida = input("Deseja limpar o console? (s/n):")
 if saida == 's':
     cll.limparSaida()
-    exit()
+    #exit()
 else:
     cll.ImprimirLista()
-    print("-" * 40)
-    historicoResultado(resposta, 'resultado de pesquisa.json')
-    exit()
+    print("-" * 40, '\n')
+    #historicoResultado(resposta, 'resultado de pesquisa.json')
+    #exit()
