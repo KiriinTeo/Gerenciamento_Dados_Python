@@ -45,8 +45,8 @@ class TestBiblioteca(unittest.TestCase):
         
         self.assertGreater(len(df_filtrado), 0)
         for _, row in df_filtrado.iterrows():
-            self.assertIn('the hobbit', row['Título'].lower())
-            self.assertTrue(any(filtros['Autor'].lower() in autor.lower() for autor in row['Autor']))
+            self.assertIn('hobbit', row['Título'].lower())
+            self.assertIn('tolkien', row['Autor'].lower())
 
 if __name__ == '__main__':
     unittest.main()

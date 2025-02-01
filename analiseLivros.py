@@ -68,3 +68,11 @@ def filtragemAvancada(df, filtros):
     print(df_filtrado)
 
     return df_filtrado
+
+def mediasDados(df, categorias):
+    if df is None:
+        return None
+    
+    print("Dados por Categoria. \n")
+
+    df.groupby
