@@ -53,6 +53,15 @@ def pesquisarLivro(isbn=None, titulo=None, autor=None):
         else:
             print("Nenhum livro encontrado.")
 
+def historicoResultado(dados, nome_arquivo):
+    try:
+        with open(nome_arquivo, 'w', encoding='utf-8') as arquivo:
+            json.dump(dados, arquivo, ensure_ascii=False, indent=4)
+        print(f"Dados salvos com sucesso no arquivo: {nome_arquivo}")
+    except Exception as e:
+        print(f"Erro ao salvar os dados no arquivo: {e}")
+
+
 def filtrarConsulta(dados, filtro_titulo=None, filtro_autor=None, filtro_ano=None):
     livros_filtrados = [
         livro for livro in dados['docs']
@@ -110,5 +119,12 @@ def mini_Menu():
     else:
         cll.ImprimirLista()
         print("-" * 40, '\n')
-        #historicoResultado(resposta, 'resultado de pesquisa.json')
         exit()
+
+resposta = pesquisarLivro(isbn='9780140328721')
+
+'''
+if 'docs' in resposta and len(resposta['docs']) > 0:
+    livro_exemplo = resposta['docs'][0] 
+    print(json.dumps(livro_exemplo, indent=4, ensure_ascii=False))  
+'''

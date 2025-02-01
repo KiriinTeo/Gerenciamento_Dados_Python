@@ -11,7 +11,9 @@ def formatacaoDados(info):
             'author_name': 'Autor',
             'first_publish_year': 'Ano de Publicação',
             'isbn': 'ISBN',
-            'publisher': 'Editora'
+            'publisher': 'Editora',
+            'subjects': 'Temas',
+            'ratings_average': 'Nota Média'
         }, inplace=True)
     
         df = df.astype(str).fillna('Desconhecido')
@@ -69,10 +71,11 @@ def filtragemAvancada(df, filtros):
 
     return df_filtrado
 
-def mediasDados(df, categorias):
+def mediasDados(df):
     if df is None:
         return None
     
     print("Dados por Categoria. \n")
+    print(df.groupby('Autor')['Ano de Publicação'].max())
 
-    df.groupby
+mediasDados(formatacaoDados(pesquisarLivro(isbn='9780140328721')))

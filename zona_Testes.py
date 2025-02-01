@@ -30,6 +30,8 @@ class TestBiblioteca(unittest.TestCase):
         self.assertIn('Ano de Publicação', df.columns)
         self.assertIn('ISBN', df.columns)
         self.assertIn('Editora', df.columns)
+        self.assertIn('Temas', df.columns)
+        self.assertIn('Nota Média', df.columns)
 
     def test_filtragemAvancada(self):
         dados = pesquisarLivro(titulo="The Hobbit", autor="J.R.R. Tolkien")
