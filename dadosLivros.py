@@ -1,7 +1,5 @@
 import requests, json
-from statLivros import CircularLinkedList
-
-cll = CircularLinkedList()
+from statLivros import CircularLinkedList as cll
 
 def consultaLivro(titulo=None, autor=None, isbn=None):
     url_Basica = "https://openlibrary.org/search.json"
@@ -20,61 +18,42 @@ def consultaLivro(titulo=None, autor=None, isbn=None):
     response = requests.get(url)
 
     if response.status_code == 200:
-        return response.json()
+        if isbn:
+            return {'docs': [response.json()[f'ISBN:{isbn}']]}
+        else:
+            return response.json()
     else:
         raise Exception(f"Erro ao acessar a API: {response.status_code}")
 
-
-def historicoResultado(dados, nome_arquivo):
-    try:
-        with open(nome_arquivo, 'w', encoding='utf-8') as arquivo:
-            json.dump(dados, arquivo, ensure_ascii=False, indent=4)
-        print(f"Dados salvos com sucesso no arquivo: {nome_arquivo}")
-    except Exception as e:
-        print(f"Erro ao salvar os dados no arquivo: {e}")
-
-def pesquisarLivro():
-    id_Exato = input("Olá! Deseja pesquisar através do ISBN? (s/n): ")
-    if id_Exato.lower() == 's':
-        isbn = input("Digite o ISBN: ")
+def pesquisarLivro(isbn=None, titulo=None, autor=None):
+    if isbn:
         dados = consultaLivro(isbn=isbn)
-        if dados:
-            for key, livro in dados.items():
+        if 'docs' in dados:
+            for livro in dados['docs']:
                 print(f"Título: {livro.get('title', 'N/A')}")
-                print(f"Autor: {', '.join(livro.get('authors', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
+                print(f"Autor: {', '.join([autor['name'] for autor in livro.get('authors', [{'name': 'N/A'}])])}")
                 print(f"ISBN: {isbn}")
                 print(f"Primeira publicação: {livro.get('publish_date', 'N/A')}")
-                print(f"Editora: {', '.join(livro.get('publishers', [{'name': 'N/A'}])[0].get('name', 'N/A'))}")
+                print(f"Editora: {', '.join([editora['name'] for editora in livro.get('publishers', [{'name': 'N/A'}])])}")
                 print("-" * 40)
             return dados
         else:
             print("Nenhum livro corresponde ao ISBN informado.")
     else:
-        print("\nEntão vamos á pesquisa por titulo e autor ")
+        dados = consultaLivro(titulo=titulo, autor=autor)
+        if 'docs' in dados:
+            for livro in dados['docs']:
+                print(f"Título: {livro.get('title', 'N/A')}")
+                print(f"Autor: {', '.join([autor['name'] for autor in livro.get('authors', [{'name': 'N/A'}])])}")
+                print(f"ISBN: {isbn}")
+                print(f"Primeira publicação: {livro.get('publish_date', 'N/A')}")
+                print(f"Editora: {', '.join([editora['name'] for editora in livro.get('publishers', [{'name': 'N/A'}])])}")
+                print("-" * 40)
+            return dados
+        else:
+            print("Nenhum livro encontrado.")
 
-    titulo = input("Digite o título do livro: ")
-    autor = input("Digite o autor (opcional): ")
-
-    dados = consultaLivro(titulo=titulo, autor=autor)
-    if 'docs' in dados:
-        for livro in dados['docs']:
-            print(f"Título: {livro.get('title', 'N/A')}")
-            print(f"Autor: {', '.join(livro.get('author_name', ['N/A']))}")
-            print(f"ISBN: {', '.join(livro.get('isbn', ['N/A']))}")
-            print(f"Primeira publicação: {livro.get('first_publish_year', 'N/A')}")
-            print(f"Editora: {', '.join(livro.get('publisher', ['N/A']))}")
-            print("-" * 40)
-        return dados
-    else:
-        print("Nenhum livro encontrado.")
-
-'''json.loads(dados['docs']) utilizado para criar uma lista com o json recebido, essa lista já está criada então o loads nn é necessário'''
-
-def filtrarConsulta(dados):
-    filtro_titulo = input("Informe um título para filtrar: ")
-    filtro_autor = input("Informe um autor para filtrar: ")
-    filtro_ano = input("Informe um ano para filtrar: ")
-
+def filtrarConsulta(dados, filtro_titulo=None, filtro_autor=None, filtro_ano=None):
     livros_filtrados = [
         livro for livro in dados['docs']
         if (not filtro_titulo or livro.get('title') == filtro_titulo) and
@@ -104,32 +83,32 @@ def adicionarLivro(dados):
         
     print("Sucesso na adição de dados!!!")
 
-while True:
-    resposta = pesquisarLivro()
-    if resposta:
-        plus = input("\nDeseja filtrar sua pesquisa? (s/n): ")
-        if plus.lower() == 's':
-            filtro = filtrarConsulta(resposta)
-            adicionarLivro(filtro)
-            
-            plus = input("Deseja realizar uma nova pesquisa?: (s/n)")
+def mini_Menu():
+    while True:
+        resposta = pesquisarLivro()
+        if resposta:
+            plus = input("\nDeseja filtrar sua pesquisa? (s/n): ")
             if plus.lower() == 's':
-                continue
-            else:
+                filtro = filtrarConsulta(resposta)
+                adicionarLivro(filtro)
+            
+                plus = input("Deseja realizar uma nova pesquisa?: (s/n)")
+                if plus.lower() == 's':
+                    continue
+                else:
+                    break
+            else: 
                 break
-        else: 
+        else:
+            print("\nDados insuficientes para filtrar.")
             break
-    else:
-        print("\nDados insuficientes para filtrar.")
-        break
-    
 
-saida = input("Deseja limpar o console? (s/n):")
-if saida == 's':
-    cll.limparSaida()
-    #exit()
-else:
-    cll.ImprimirLista()
-    print("-" * 40, '\n')
-    #historicoResultado(resposta, 'resultado de pesquisa.json')
-    #exit()
+    saida = input("Deseja limpar o console? (s/n):")
+    if saida == 's':
+        cll.limparSaida()
+        #exit()
+    else:
+        cll.ImprimirLista()
+        print("-" * 40, '\n')
+        #historicoResultado(resposta, 'resultado de pesquisa.json')
+        exit()
