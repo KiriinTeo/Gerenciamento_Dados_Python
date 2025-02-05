@@ -3,7 +3,7 @@ from dadosLivros import pesquisarLivro
 
 def formatacaoDados(info):
     if info:
-        colunas_Principais = ['title', 'author_name', 'first_publish_year', 'isbn', 'publisher']
+        colunas_Principais = ['title', 'author_name', 'first_publish_year', 'isbn', 'publisher', 'subjects', 'numbers_of_pages']
         df = pd.DataFrame(info['docs'], columns=colunas_Principais)
 
         df.rename(columns={
@@ -13,7 +13,7 @@ def formatacaoDados(info):
             'isbn': 'ISBN',
             'publisher': 'Editora',
             'subjects': 'Temas',
-            'ratings_average': 'Nota Média'
+            'number_of_pages': 'Paginas'
         }, inplace=True)
     
         df = df.astype(str).fillna('Desconhecido')
@@ -71,11 +71,15 @@ def filtragemAvancada(df, filtros):
 
     return df_filtrado
 
-def mediasDados(df):
-    if df is None:
-        return None
-    
-    print("Dados por Categoria. \n")
-    print(df.groupby('Autor')['Ano de Publicação'].max())
 
-mediasDados(formatacaoDados(pesquisarLivro(isbn='9780140328721')))
+# Ainda em desenvolvimento, agrupamento de dados para analise, colunas: "numem_of_pages" e "subjects" não reconhecidas pelo dataFrame
+def mediasDados(df):
+    if 'Paginas' in df.columns:
+        print(df.groupby("Paginas").mean())
+    else:
+        print("A coluna 'Paginas' não está presente no DataFrame.")
+
+if __name__ == "__main__":
+    info = pesquisarLivro(titulo="The Hobbit", autor="J.R.R. Tolkien")
+    df_resultado = formatacaoDados(info)
+    mediasDados(df_resultado)

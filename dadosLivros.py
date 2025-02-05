@@ -121,9 +121,10 @@ def mini_Menu():
         print("-" * 40, '\n')
         exit()
 
-resposta = pesquisarLivro(isbn='9780140328721')
-
 '''
+Visualização dos dados em json bruto
+
+resposta = pesquisarLivro(isbn='9780140328721')
 if 'docs' in resposta and len(resposta['docs']) > 0:
     livro_exemplo = resposta['docs'][0] 
     print(json.dumps(livro_exemplo, indent=4, ensure_ascii=False))  
